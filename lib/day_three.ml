@@ -28,11 +28,12 @@ let buildGearsList chars width =
     let sp = Batteries.List.span Batteries.Char.is_digit tail in
     let str = Batteries.String.of_list (c :: (fst sp)) in
     let n = int_of_string str in
-    for x = i to (i + width) do
-      Hashtbl.add numberLocations (getPosition n width) (x, n);
+    let l = String.length str in
+    for x = i to (i + l - 1) do
+      Hashtbl.add numberLocations (getPosition x width) (i, n);
     done;
-    inner tail acc (i + String.length str)
-  | '*' :: tail -> print_int i; print_newline(); inner tail ((getPosition i width) :: acc) (i + 1)
+    inner (snd sp) acc (i + String.length str)
+  | '*' :: tail -> inner tail ((getPosition i width) :: acc) (i + 1)
   | _ :: tail -> inner tail acc (i + 1)
   | [] -> acc
   in
@@ -63,11 +64,14 @@ let aroundNumbers =
   Hashtbl.find_opt numberLocations (x + 1, y) ::
   List.append (getLine (y - 1) (x - 1)) (getLine (y + 1) (x - 1))) |> List.filter_map Fun.id
 
+let isNumberTheSame (a: int * int) (b: int * int) = match (a, b) with
+| ((i1, _), (i2, _)) -> i1 == i2
+
 let multiplyGears (list : (int * int) list) =
-  let uniqueNumbers = Batteries.List.unique list in
-  if ((List.length list) == 2) then
+  let uniqueNumbers = Batteries.List.unique ~eq: isNumberTheSame list in
+  if ((List.length uniqueNumbers) == 2) then
     let ns = List.map snd uniqueNumbers in
-    List.fold_left Int.mul 0 ns
+    List.fold_left Int.mul 1 ns
   else 0
 
 (* let part1 =
@@ -80,13 +84,13 @@ let multiplyGears (list : (int * int) list) =
 let res =
   let file = "/Users/chris/code/adventofcode_2023/data/day_three.txt" in
   let lines = Batteries.File.lines_of(file) |> Batteries.List.of_enum |> List.map Batteries.String.to_list in
-  let width = List.length (Batteries.List.first lines) in
-  (* let mid = fun (_, e, _) -> e in *)
-  print_string (Batteries.String.of_list (List.flatten lines));
-  let l = buildGearsList (List.flatten lines) width in
-    List.iter (fun x -> match x with
-    | (a, b) -> print_int a; print_char ' '; print_int b; print_newline()) l
-  (* |> List.map aroundNumbers |> List.map multiplyGears |> Batteries.List.sum *)
+  let width = List.length (List.hd lines) in
+    buildGearsList (List.flatten lines) width |> List.map aroundNumbers |> List.map multiplyGears |> Batteries.List.sum
 
-  (* List.filter hasSymbolNearby (buildNumbersList (List.flatten lines) width) |> List.map mid |> Batteries.List.sum *)
+
+
+    (* |> List.hd |> List.iter (fun x -> match x with
+    | (i, n) -> print_int i; print_char ' '; print_int n; print_char ' ') *)
+
+
 
