@@ -1,2 +1,2 @@
 val findDigits : char list -> char list
-val res: int
+val res: unit -> int

@@ -19,7 +19,7 @@ let lineToInt line =
   let toInt list = String.make 1 (Batteries.List.first list) ^ String.make 1 (Batteries.List.last list) |> int_of_string in
   line |> Batteries.String.to_list |> findDigits |> toInt
 
-let res =
+let res () =
   let file = "/Users/chris/code/adventofcode_2023/data/day_one.txt" in
   let lines = Batteries.File.lines_of(file) |> Batteries.List.of_enum in
   List.map lineToInt lines |> Batteries.List.sum

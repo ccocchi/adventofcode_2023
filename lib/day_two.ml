@@ -41,7 +41,7 @@ let isPossible = function
 let power = function
 | (_, { red; blue; green }) -> red * blue * green
 
-let res =
+let res () =
   let file = "/Users/chris/code/adventofcode_2023/data/day_two.txt" in
   let lines = Batteries.File.lines_of(file) |> Batteries.List.of_enum in
   let fn s = s |> lineToTuple |> power in

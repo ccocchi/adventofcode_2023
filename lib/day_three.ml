@@ -81,7 +81,7 @@ let multiplyGears (list : (int * int) list) =
   let mid = fun (_, e, _) -> e in
   List.filter hasSymbolNearby (buildNumbersList (List.flatten lines) width) |> List.map mid |> Batteries.List.sum *)
 
-let res =
+let res () =
   let file = "/Users/chris/code/adventofcode_2023/data/day_three.txt" in
   let lines = Batteries.File.lines_of(file) |> Batteries.List.of_enum |> List.map Batteries.String.to_list in
   let width = List.length (List.hd lines) in
