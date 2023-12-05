@@ -1,4 +1,6 @@
-let () = print_int (Aoc.Day_four.res ())
+let () =
+  print_int (Aoc.Day_five.res ())
+  (* List.iter (fun x -> print_int x; print_newline()) (Aoc.Day_five.res ()) *)
   (* List.iter (fun x -> print_int x; print_char ' ') Aoc.Day_four.res *)
   (* let str = "Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1" in
   let card = Aoc.Day_four.makeCard str in
