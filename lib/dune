@@ -3,4 +3,4 @@
 (library
  (name aoc)
  (modules :standard)
- (libraries batteries))
+ (libraries batteries core))

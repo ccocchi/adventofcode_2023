@@ -5,8 +5,12 @@ let () =
   | true -> print_endline (Str.matched_group 3 s)
   | false -> print_endline "false" *)
 
-  print_int (Aoc.Day_ten.Part1.res ());
-  print_newline();
+  Aoc.Day_twelve.Part2.res ()
+
+  (* List.iter
+    (fun (x, y) -> print_char '('; print_int x; print_string ", "; print_int y; print_endline ")")
+    (Aoc.Day_eleven.Part1.res ()) *)
+
 
   (* let list = Batteries.List.take 10 (Aoc.Day_seven.res ()) in
   let foo ((h, _): Aoc.Day_seven.hand * int) = h.str in

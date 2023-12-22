@@ -9,6 +9,3 @@ let suite = [
   "eightwothree", `Quick, (test_find_digits "eightwothree" "823");
   "29lzrxseven", `Quick, (test_find_digits "29lzrxseven" "297");
 ]
-
-let () =
-  Alcotest.run "AOC" [ "Day one", suite ]

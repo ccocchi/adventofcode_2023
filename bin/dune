@@ -1,4 +1,48 @@
 (executable
  (public_name aoc)
  (name main)
- (libraries aoc))
+ (modules main)
+ (libraries aoc core core_bench core_unix.command_unix))
+
+(executable
+ (public_name day13)
+ (name day13)
+ (libraries core)
+ (modules Day13))
+
+ (executable
+ (public_name day14)
+ (name day14)
+ (libraries core)
+ (modules Day14))
+
+ (executable
+ (public_name day15)
+ (name day15)
+ (libraries core)
+ (modules Day15))
+
+ (executable
+ (public_name day16)
+ (name day16)
+ (libraries core)
+ (modules Day16))
+
+ (executable
+ (public_name day17)
+ (name day17)
+ (libraries core core_kernel.pairing_heap)
+ (preprocess (pps ppx_deriving.show ppx_deriving.ord ppx_deriving.eq ppx_hash ppx_jane))
+ (modules Day17))
+
+(executable
+ (public_name day18)
+ (name day18)
+ (libraries core)
+ (modules Day18))
+
+ (executable
+ (public_name day19)
+ (name day19)
+ (libraries core re)
+ (modules Day19))
