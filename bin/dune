@@ -46,3 +46,22 @@
  (name day19)
  (libraries core re)
  (modules Day19))
+
+ (executable
+ (public_name day20)
+ (name day20)
+ (libraries core aoc)
+ (modules Day20))
+
+ (executable
+ (public_name day21)
+ (name day21)
+ (libraries core)
+ (preprocess (pps ppx_deriving.ord ppx_jane))
+ (modules Day21))
+
+(executable
+ (public_name day22)
+ (name day22)
+ (libraries core)
+ (modules Day22))
