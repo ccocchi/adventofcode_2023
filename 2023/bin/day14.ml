@@ -2,7 +2,7 @@ open Core
 
 let read_lines =
   let orig =
-    In_channel.read_lines "/Users/chris/code/adventofcode_2023/data/day14.txt"
+    In_channel.read_lines "/Users/chris/code/adventofcode_2023/2023/data/day14.txt"
     |> List.map ~f:String.to_array
     |> Array.of_list
   in
