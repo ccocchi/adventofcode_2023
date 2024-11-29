@@ -1,5 +1,52 @@
 open Core
 
+module Card = struct
+  type card = {
+    mutable attack: int;
+    mutable health: int;
+    mutable maxAttack: int;
+    mutable maxHealth: int;
+    mutable taunt: bool;
+    mutable divineShield: bool;
+    mutable venom: bool;
+    poison: bool;
+  }
+
+  let hasTaunt c = c.taunt
+
+  let resolveAttack (attacker: card) (defenser: card) =
+    defenser.health <- (defenser.health - attacker.attack);
+    attacker.health <- (attacker.health - defenser.attack)
+
+  let randomPick l =
+      let nd = List.map ~f:(fun c -> (Random.bits (), c)) l in
+      let sond = List.sort ~compare:(fun (a, _) (b, _) -> Int.compare a b) nd in
+      List.hd_exn sond |> snd
+
+  let findTarget (ary: card list): card = match ary with
+    | c :: [] -> c
+    | [] -> failwith("no target")
+    | _ -> match List.filter ~f:hasTaunt ary with
+      | c :: [] -> c
+      | [] -> randomPick ary
+      | t -> randomPick t
+
+  let round ((p1: card list), (p2: card list)) = match p1 with
+  | c :: _ ->
+    resolveAttack c (findTarget p2)
+  | _ -> failwith("meh")
+
+  let fight (p1: card list) (p2: card list) = match (p1, p2) with
+  | ([], []) -> 0
+  | ([], _) -> 1
+  | (_, []) -> -1
+end
+
+
+
+
+
+
 type dir = X | Y | Z
 type space = int array array array
 
@@ -91,30 +138,30 @@ let part1 supports =
   let seq = Sequence.init (List.length supports) ~f:(fun x -> x + 1)
   in
   supports
-  |> List.fold ~init:(Set.of_sequence (module Int) seq) ~f:(fun acc l ->
+  |> List.fold ~init:(Set.of_sequence (module Int) seq) ~f:(fun acc (_, l) ->
     match l with
     | hd :: [] -> Set.remove acc hd
     | _ -> acc
   )
   |> fun set -> printf "part1=%d\n" (Set.length set)
 
+let remove_all els ~from =
+  List.filter from ~f:(fun i -> List.mem els i ~equal: Int.equal |> not)
+
 let part2 supports =
-  let start = List.count supports ~f: List.is_empty in
-  let rec disintegrate l bricks = match bricks with
-  | [] -> l
-  | removed :: tail ->
-    let chain = List.filter_mapi l ~f:(fun i list ->
-      if List.equal Int.equal [removed] list then Some(i + 1) else None
-    ) and updated_list = List.map l ~f:(List.filter ~f:(fun n -> Int.equal n removed |> not))
-    in
-    let uniq = Set.of_list (module Int ) (tail @ chain) |> Set.to_list in
-    disintegrate updated_list uniq
+  let start = List.filter supports ~f:(fun (_, l) -> not (List.is_empty l)) in
+  let rec disintegrate l res bricks =
+    let boom, rest = List.partition_map l ~f:(fun (lbl, nl) ->
+      let list_without_bricks = remove_all bricks ~from:nl in
+      if List.is_empty list_without_bricks then First lbl
+      else Second (lbl, list_without_bricks)
+    )
+    in match boom with
+    | [] -> res
+    | _ -> disintegrate rest (res + List.length boom) boom
   in
   List.init (List.length supports) ~f:(fun x -> x + 1)
-  |> List.map ~f:(fun removed ->
-    disintegrate supports [removed]
-    |> (List.count ~f: List.is_empty)
-    |> fun x -> x - start)
+  |> List.map ~f:(fun removed -> disintegrate start 0 [removed])
   |> List.fold ~init:0 ~f:( + )
   |> printf "part2=%d\n"
 
@@ -125,8 +172,9 @@ let () =
   (* List.iter vectors ~f:Vector._print; *)
   let supports =
     vectors
-    |> List.mapi ~f:(fun i v -> gravity ary (v, i + 1))
-    |> List.map ~f:(fun v -> find_supports ary v)
+    |> List.mapi ~f:(fun i v ->
+      let nv = gravity ary (v, i + 1) in (i + 1, find_supports ary nv)
+    )
   in
     (* List.iteri supports ~f:(fun i l ->
       printf "%d supported by %s\n" (i + 1) (List.to_string l ~f:string_of_int)
