@@ -1,4 +1,17 @@
 (executable
- (public_name aoc_2024)
- (name main)
- (libraries aoc_2024))
+ (public_name day1)
+ (name day1)
+ (libraries core)
+ (modules Day1))
+
+(executable
+ (public_name day2)
+ (name day2)
+ (libraries core)
+ (modules Day2))
+
+(executable
+ (public_name day3)
+ (name day3)
+ (libraries core re)
+ (modules Day3))
