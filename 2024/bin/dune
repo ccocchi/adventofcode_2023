@@ -15,3 +15,27 @@
  (name day3)
  (libraries core re)
  (modules Day3))
+
+(executable
+ (public_name day4)
+ (name day4)
+ (libraries core)
+ (modules Day4))
+
+ (executable
+ (public_name day5)
+ (name day5)
+ (libraries core)
+ (modules Day5))
+
+ (executable
+ (public_name day6)
+ (name day6)
+ (libraries core)
+ (modules Day6))
+
+ (executable
+ (public_name day7)
+ (name day7)
+ (libraries core)
+ (modules Day7))
