@@ -77,7 +77,6 @@ let part2 original (path: (int * int) list) =
     mat.(i).(j) <- '#';
     ends_in_loop mat (94, 73)
   )
-  (* |> List.iter ~f:(fun (a, b) -> printf "%d, %d\n" a b) *)
   |> List.length
 
 let () =
@@ -85,6 +84,4 @@ let () =
   let path = part1 mat
 in
   printf "part1=%d\n" (List.length path);
-  (* part2 mat path *)
-  printf "part2=%d\n" (part2 mat path);
-  printf "%b\n" (has_loop [2;0;3])
+  printf "part2=%d\n" (part2 mat path)
