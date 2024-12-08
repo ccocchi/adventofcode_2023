@@ -32,17 +32,6 @@ let move_guard mat (i, j) =
 in
   inner i j N []
 
-let _debug mat =
-  let n, m = (Array.length mat, Array.length mat.(0)) in
-  for j = 0 to n - 1 do
-    for i = 0 to m - 1 do
-      let i = mat.(j).(i) in
-      printf "%c" (if i = 0 then '.' else '#')
-    done;
-    Out_channel.newline stdout;
-  done;
-  Out_channel.newline stdout
-
 let cmp (a1, b1) (a2, b2) = match Int.compare a1 a2 with
 | 0 -> Int.compare b1 b2
 | i -> i
