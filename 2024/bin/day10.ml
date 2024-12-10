@@ -5,6 +5,15 @@ let parse_input =
   |> List.map ~f:(fun l -> String.to_array l |> Array.map ~f:(fun c -> Int.of_string (Char.to_string c)))
   |> Array.of_list
 
+  module Coord = struct
+    module T = struct
+      type t = int * int [@@deriving compare, sexp_of]
+    end
+
+    include T
+    include Comparator.Make(T)
+  end
+
 let get mat i j =
   try
     Some((i, j), mat.(i).(j))
@@ -27,9 +36,8 @@ let hike mat start ~init ~f=
   inner init [(start, 0)]
 
 let part1 (mat: int array array) trailheads =
-  List.map trailheads ~f:(fun x -> hike mat x ~init:[] ~f:(List.cons))
-  |> List.map ~f:(List.dedup_and_sort ~compare:(Tuple2.compare ~cmp1:Int.compare ~cmp2:Int.compare))
-  |> List.map ~f:List.length
+  List.map trailheads ~f:(fun x -> hike mat x ~init:(Set.empty (module Coord)) ~f:(fun p acc -> Set.add acc p))
+  |> List.map ~f:Set.length
   |> List.reduce_exn ~f:(+)
 
 let part2 mat trailheads =
