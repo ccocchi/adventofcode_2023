@@ -5,14 +5,14 @@ let parse_input =
   |> List.map ~f:(fun l -> String.to_array l |> Array.map ~f:(fun c -> Int.of_string (Char.to_string c)))
   |> Array.of_list
 
-  module Coord = struct
-    module T = struct
-      type t = int * int [@@deriving compare, sexp_of]
-    end
-
-    include T
-    include Comparator.Make(T)
+module Coord = struct
+  module T = struct
+    type t = int * int [@@deriving compare, sexp_of]
   end
+
+  include T
+  include Comparator.Make(T)
+end
 
 let get mat i j =
   try
