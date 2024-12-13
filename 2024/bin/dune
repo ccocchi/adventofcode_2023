@@ -74,3 +74,9 @@
  (preprocess (pps ppx_jane))
  (modules Day12))
 
+ (executable
+ (public_name day13)
+ (name day13)
+ (libraries core re)
+ (modules Day13))
+
