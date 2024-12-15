@@ -80,3 +80,9 @@
  (libraries core re)
  (modules Day13))
 
+ (executable
+ (public_name day14)
+ (name day14)
+ (libraries core re)
+ (modules Day14))
+
