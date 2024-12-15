@@ -86,3 +86,9 @@
  (libraries core re)
  (modules Day14))
 
+(executable
+ (public_name day15)
+ (name day15)
+ (libraries core)
+ (preprocess (pps ppx_jane))
+ (modules Day15))
