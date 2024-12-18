@@ -106,3 +106,10 @@
  (libraries core)
  (preprocess (pps ppx_jane))
  (modules Day17))
+
+(executable
+ (public_name day18)
+ (name day18)
+ (libraries core aoc_2024)
+ (preprocess (pps ppx_jane))
+ (modules Day18))
