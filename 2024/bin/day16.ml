@@ -22,7 +22,22 @@ let parse_input =
   |> List.concat
   |> Set.of_list (module Coord)
 
-type dir = Up | Down | Left | Right [@@deriving equal]
+type dir = Up | Down | Left | Right [@@deriving equal, compare, hash, sexp_of]
+
+module WCoord = struct
+  module T = struct
+    type t = (Coord.t * dir) [@@deriving equal, hash, compare, sexp_of]
+  end
+
+  include T
+  include Comparator.Make(T)
+end
+
+let _print_dir = function
+| Up -> "Up"
+| Down -> "Down"
+| Left -> "Left"
+| Right -> "Right"
 
 let opposite = function
 | Up -> Down
@@ -60,13 +75,14 @@ in
 type step = {
   pos: Coord.t;
   dir: dir;
-  path: (Coord.t * dir) list
+  path: Coord.t list
 }
 
 (* let compare_score (s1, _) (s2, _) = Int.compare s1 s2 *)
 
 let find_path walls start finish =
   let seen = Hashtbl.create (module Coord)
+  and seen_dirs = Hashtbl.create (module WCoord)
   and openSet = Min_heap.create ~size:64 ~init:{ pos = (0, 0); dir = Up; path = []}
   and paths = ref [] in
   (* let go_back best_path =
@@ -82,21 +98,40 @@ let find_path walls start finish =
       inner ((inner [] good_ones) @ res) xs
     in
   in  *)
-  Min_heap.add openSet { pos = start; dir = Right; path = [(start, Right)] } ~score:0;
+  Min_heap.add openSet { pos = start; dir = Right; path = [start] } ~score:0;
   while Min_heap.length openSet > 0 do
     match Min_heap.pop_min_elt openSet with
     | None -> raise(invalid_arg "no path found")
-    | Some((score, { pos; dir; path })) when Coord.equal pos finish -> begin
-      let diff = if equal_dir dir Down then 0 else 0 in
+    | Some((score, { pos; path; dir })) when Coord.equal pos finish -> begin
+      Hashtbl.set seen_dirs ~key:(pos, dir) ~data:1;
       match Hashtbl.find seen pos with
       | None ->
         paths := path @ !paths;
-        Hashtbl.add_exn seen ~key:pos ~data:(score + diff);
-        Min_heap.empty openSet (* end early *)
+        Hashtbl.add_exn seen ~key:pos ~data:(score)
+      | Some(s) when score < s ->
+        paths := path @ !paths;
+        Hashtbl.set seen ~key:pos ~data:(score)
       | _ -> ()
     end
     | Some((score, { pos; dir; path })) ->
-      (try
+      (* match Hashtbl.find seen pos with
+      | Some(s) when score > s -> ()
+      | _ -> begin *)
+        match Hashtbl.find seen_dirs (pos, dir) with
+        | Some(_) when score > (Hashtbl.find_exn seen pos) -> ()
+        | _ -> begin
+          Hashtbl.set seen ~key:pos ~data:score;
+          Hashtbl.set seen_dirs ~key:(pos, dir) ~data:1;
+
+          neighbors walls pos dir
+          |> List.iter ~f:(fun (ns, (p, d)) ->
+            Min_heap.add openSet { pos = p; dir = d; path = (p :: path) } ~score:(score + ns)
+          )
+        end
+
+
+
+      (* (try
           printf "next node is "; Coord._print pos; printf " with score %d" score;
           let v = Hashtbl.find_exn seen pos
           in
@@ -108,8 +143,8 @@ let find_path walls start finish =
           printf "\t neighbor "; Coord._print p; printf " with score %d\n" (score + ns);
           Min_heap.add openSet { pos = p; dir = d; path = ((p, d) :: path) } ~score:(score + ns)
         );
-        Hashtbl.add_exn seen ~key:pos ~data:score
-      end
+
+      end *)
   done;
   (Hashtbl.find_exn seen finish, !paths)
 
@@ -147,11 +182,11 @@ let () =
   List.iter [1;2;3;17;19;36;7;25;100] ~f:(fun x -> Aoc_2024.Min_heap.add heap x ~score: x);
   inner heap *)
   let walls = parse_input in
-  let part1, part2 = find_path walls (139, 1) (1, 139) in
+  let part1, part2 = find_path walls (13, 1) (1, 13) in
   printf "part1=%d\n" part1;
   printf "part2=%d\n" (List.length part2);
 
-  _debug walls (List.map part2 ~f:fst) 140 140
+  _debug walls (part2) 14 14
 
 
   (* Set.iter part2 ~f:(fun pos -> Coord._print pos); *)
