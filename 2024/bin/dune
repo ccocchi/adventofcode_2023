@@ -134,3 +134,10 @@
  (libraries core core_bench)
  (preprocess (pps ppx_jane))
  (modules Day22))
+
+ (executable
+ (public_name day23)
+ (name day23)
+ (libraries core)
+ (preprocess (pps ppx_jane))
+ (modules Day23))
