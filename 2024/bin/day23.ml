@@ -5,8 +5,6 @@ let parse_input =
   |> List.map ~f:(String.split ~on:'-')
   |> List.map ~f:(function | a :: b :: [] -> (a, b) | _ -> invalid_arg("bad input"))
 
-(* let vertices l = List.concat l |> List.dedup_and_sort ~compare:String.compare *)
-
 module String3 = struct
   module T = struct
     type t = string * string * string [@@deriving compare, sexp_of]
@@ -75,15 +73,34 @@ let part1 (g: Graph.t) =
   )
   |> Set.length
 
+let part2 (g: Graph.t) =
+  let seen = Hashtbl.create (module String) in
+  let rec inner res = function
+  | [] -> res
+  | x :: xs when (List.length x) = 1 ->
+    let node = (List.hd_exn x) in
+    let conns = Hashtbl.find_exn g.graph node |> Set.to_list |> List.map ~f:(fun e -> e :: x) in
+    inner res (conns @ xs)
+  | x :: xs ->
+    let key = String.concat ~sep:"," (List.sort ~compare:String.compare x) in
+    if Hashtbl.mem seen key then inner res xs
+    else
+      let r = if (List.length x) > (List.length res) then x else res
+      and l =
+        List.map x ~f:(Hashtbl.find_exn g.graph)
+        |> List.reduce_exn ~f:Set.inter
+        |> Set.to_list
+        |> List.map ~f:(fun e -> e :: x)
+      in
+      Hashtbl.add_exn seen ~key ~data:1;
+      inner r (l @ xs)
+  in
+  inner [] (Hashtbl.keys g.graph |> List.map ~f:(fun x -> [x]))
+  |> List.sort ~compare:String.compare
+  |> String.concat ~sep:","
+
 let () =
   let input = parse_input in
   let g = build_graph input in
-  let l = part1 g in
-  printf "part1=%d\n" l
-  (* (* print_endline "aq";
-  Set.iter (Hashtbl.find_exn g.graph "aq") ~f:(fun s -> printf "  -> %s\n" s);
-  print_endline "cg";
-  Set.iter (Hashtbl.find_exn g.graph "cg") ~f:(fun s -> printf "  -> %s\n" s) *)
-
-
-  Set.iter l ~f:(fun (a, b ,c) -> printf "(%s, %s, %s)\n" a b c) *)
+  printf "part1=%d\n" (part1 g);
+  printf "part2=%s\n" (part2 g)
