@@ -82,7 +82,6 @@ let part2 (input: int list) =
   in
   printf "got %d bananas with seq %s\n" v (ChangeSequence.to_string seq)
 
-
 let () =
   let l = parse_input in
   part1 l;
